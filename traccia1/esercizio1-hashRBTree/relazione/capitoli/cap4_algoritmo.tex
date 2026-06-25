@@ -1,0 +1,123 @@
+\chapter{Descrizione degli Algoritmi}
+
+\section{Funzione di Hash}
+
+La funzione di hash adottata è l'algoritmo \textbf{djb2}, una funzione classica 
+per stringhe proposta da Daniel J. Bernstein. La formula iterativa è:
+
+\begin{equation}
+    h_0 = 5381, \quad h_{i+1} = h_i \cdot 33 + c_i
+\end{equation}
+
+dove $c_i$ è il valore ASCII dell'$i$-esimo carattere della chiave. Il risultato 
+finale viene mascherato con \texttt{0x7FFFFFFF} per garantire che l'identificatore 
+\texttt{id} sia sempre un intero non negativo.
+
+L'algoritmo djb2 offre una buona distribuzione dei valori di hash su stringhe 
+di lunghezza variabile, minimizzando le collisioni nella pratica.
+
+\section{Inserimento}
+
+L'operazione di inserimento \texttt{insert(key, value)} si articola in due fasi:
+
+\begin{enumerate}
+    \item \textbf{Calcolo dell'hash}: viene calcolato \texttt{id = hashFunction(key)} 
+    e si verifica tramite \texttt{searchNode(id)} se esiste già un nodo con 
+    quell'identificatore.
+    \begin{itemize}
+        \item Se il nodo esiste (collisione), la coppia \texttt{(key, value)} 
+        viene aggiunta in coda alla lista \texttt{items} del nodo esistente. 
+        L'albero non viene modificato.
+        \item Se il nodo non esiste, si procede con l'inserimento BST.
+    \end{itemize}
+    \item \textbf{Inserimento BST}: il nuovo nodo viene inserito nell'albero 
+    navigando da sinistra a destra in base al valore di \texttt{id}. 
+    Il nodo è inizializzato con colore \texttt{RED}.
+\end{enumerate}
+
+Dopo l'inserimento BST, viene invocato \texttt{insertFix} per ripristinare 
+le proprietà del Red-Black Tree.
+
+\subsection{InsertFix}
+
+\texttt{insertFix} gestisce tre casi, applicati simmetricamente a seconda che 
+il padre del nodo inserito sia figlio sinistro o destro del nonno:
+
+\begin{itemize}
+    \item \textbf{Caso 1 --- Zio RED}: il padre e lo zio vengono colorati 
+    \texttt{BLACK}, il nonno viene colorato \texttt{RED} e il controllo 
+    risale al nonno.
+    \item \textbf{Caso 2 --- Zio BLACK, nodo figlio destro}: viene eseguita 
+    una rotazione sinistra sul padre, trasformando la situazione nel Caso 3.
+    \item \textbf{Caso 3 --- Zio BLACK, nodo figlio sinistro}: il padre viene 
+    colorato \texttt{BLACK}, il nonno \texttt{RED}, e viene eseguita una 
+    rotazione destra sul nonno.
+\end{itemize}
+
+Al termine del ciclo, la radice viene forzata a \texttt{BLACK}.
+
+\section{Ricerca}
+
+L'operazione di ricerca \texttt{search(key, value)} si articola in due fasi:
+
+\begin{enumerate}
+    \item \textbf{Ricerca nell'albero}: viene calcolato \texttt{id = hashFunction(key)} 
+    e si naviga l'albero tramite \texttt{searchNode(id)}, scendendo a sinistra 
+    se \texttt{id < node->id} e a destra altrimenti.
+    \item \textbf{Ricerca nella lista}: una volta trovato il nodo, si scorre 
+    la lista \texttt{items} confrontando la chiave esatta per risolvere 
+    eventuali collisioni.
+\end{enumerate}
+
+Se il nodo non viene trovato oppure la chiave non è presente nella lista, 
+viene stampato un messaggio di errore.
+
+\section{Cancellazione}
+
+L'operazione di cancellazione \texttt{remove(key, value)} opera su due livelli:
+
+\begin{enumerate}
+    \item \textbf{Rimozione dalla lista}: viene cercata la coppia esatta 
+    \texttt{(key, value)} nella lista \texttt{items} del nodo. Se trovata, 
+    viene rimossa. Se la lista contiene ancora altri elementi, l'operazione 
+    termina qui e l'albero non viene modificato.
+    \item \textbf{Rimozione dall'albero}: se la lista è rimasta vuota, il nodo 
+    viene rimosso dall'albero secondo i tre casi classici del RBT:
+    \begin{itemize}
+        \item \textbf{Caso 1}: il nodo non ha figlio sinistro --- il sottoalbero 
+        destro lo sostituisce tramite \texttt{transplant}.
+        \item \textbf{Caso 2}: il nodo non ha figlio destro --- il sottoalbero 
+        sinistro lo sostituisce tramite \texttt{transplant}.
+        \item \textbf{Caso 3}: il nodo ha entrambi i figli --- viene cercato il 
+        successore in-order (minimo del sottoalbero destro) tramite 
+        \texttt{minimum}, che prende il posto del nodo rimosso.
+    \end{itemize}
+\end{enumerate}
+
+Se il nodo rimosso (o il suo successore nel Caso 3) aveva colore \texttt{BLACK}, 
+viene invocato \texttt{deleteFix} per ripristinare le proprietà RBT.
+
+\subsection{DeleteFix}
+
+\texttt{deleteFix} gestisce quattro casi, applicati simmetricamente:
+
+\begin{itemize}
+    \item \textbf{Caso 1 --- Fratello RED}: rotazione sinistra sul padre e 
+    recoloring, che trasforma la situazione in uno dei casi seguenti.
+    \item \textbf{Caso 2 --- Fratello BLACK, entrambi i figli BLACK}: il fratello 
+    viene colorato \texttt{RED} e il controllo risale al padre.
+    \item \textbf{Caso 3 --- Fratello BLACK, figlio destro BLACK}: rotazione destra 
+    sul fratello e recoloring, che trasforma la situazione nel Caso 4.
+    \item \textbf{Caso 4 --- Fratello BLACK, figlio destro RED}: rotazione sinistra 
+    sul padre e recoloring. Il ciclo termina forzando \texttt{x = root}.
+\end{itemize}
+
+Al termine, il nodo corrente viene colorato \texttt{BLACK}.
+
+\section{Stampa}
+
+Il metodo \texttt{print()} invoca ricorsivamente \texttt{printHelper}, che 
+visita l'albero in pre-order (radice, figlio sinistro, figlio destro) 
+producendo una rappresentazione grafica con indentazione progressiva. 
+Per ogni nodo vengono stampati l'identificatore, il colore e tutte le 
+coppie presenti nella lista \texttt{items}.

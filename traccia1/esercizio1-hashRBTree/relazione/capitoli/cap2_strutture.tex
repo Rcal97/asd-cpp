@@ -1,0 +1,110 @@
+\chapter{Descrizione delle Strutture Dati}
+
+\section{KeyValue}
+
+La struttura \texttt{KeyValue} rappresenta la coppia chiave-valore memorizzata 
+nella lista di collisione di ciascun nodo. È definita come segue:
+
+\begin{lstlisting}
+struct KeyValue {
+    string key;
+    string value;
+};
+\end{lstlisting}
+
+Entrambi i campi sono di tipo \texttt{std::string}. La separazione della coppia 
+in una struttura dedicata rende il codice più leggibile e facilita la gestione 
+delle collisioni nella lista.
+
+\section{RBNode}
+
+\texttt{RBNode} rappresenta il nodo dell'albero Red-Black. Ogni nodo contiene:
+
+\begin{itemize}
+    \item \texttt{int id} --- identificatore numerico del nodo, ottenuto applicando 
+    la funzione di hash alla chiave inserita;
+    \item \texttt{Color color} --- colore del nodo, \texttt{RED} o \texttt{BLACK}, 
+    necessario per mantenere le proprietà dell'albero Red-Black;
+    \item \texttt{std::list<KeyValue> items} --- lista concatenata delle coppie 
+    \texttt{(chiave, valore)} che condividono lo stesso valore di hash (gestione 
+    delle collisioni);
+    \item \texttt{RBNode* left}, \texttt{RBNode* right}, \texttt{RBNode* parent} 
+    --- puntatori al figlio sinistro, figlio destro e nodo padre.
+\end{itemize}
+
+Il tipo enumerato \texttt{Color} è definito come:
+
+\begin{lstlisting}
+enum Color { RED, BLACK };
+\end{lstlisting}
+
+Il costruttore di \texttt{RBNode} inizializza il colore a \texttt{RED} 
+(ogni nuovo nodo inserito è sempre rosso), aggiunge la coppia 
+\texttt{(chiave, valore)} alla lista \texttt{items} e imposta tutti i 
+puntatori a \texttt{nullptr}:
+
+\begin{lstlisting}
+RBNode(int id, const string& key, const string& value)
+    : id(id), color(RED), left(nullptr), right(nullptr), parent(nullptr) {
+    items.push_back({key, value});
+}
+\end{lstlisting}
+
+\section{HashRBTree}
+
+\texttt{HashRBTree} è la classe principale che incapsula l'intera struttura dati. 
+Mantiene internamente due puntatori:
+
+\begin{itemize}
+    \item \texttt{RBNode* root} --- puntatore alla radice dell'albero;
+    \item \texttt{RBNode* NIL} --- nodo sentinella condiviso da tutti i nodi 
+    foglia e dalla radice prima di qualsiasi inserimento.
+\end{itemize}
+
+\subsection{Nodo Sentinella NIL}
+
+Invece di utilizzare \texttt{nullptr} per rappresentare i nodi foglia e i 
+puntatori mancanti, si adotta un nodo sentinella \texttt{NIL} con le seguenti 
+caratteristiche:
+
+\begin{itemize}
+    \item colore \texttt{BLACK};
+    \item tutti i puntatori (\texttt{left}, \texttt{right}, \texttt{parent}) 
+    puntano a se stesso.
+\end{itemize}
+
+Questo approccio semplifica notevolmente l'implementazione di \texttt{insertFix} 
+e \texttt{deleteFix}, eliminando la necessità di controllare \texttt{nullptr} 
+ad ogni accesso ai campi del nodo: è sempre possibile accedere a 
+\texttt{->color}, \texttt{->parent} ecc. senza rischio di dereferenziazione nulla.
+
+\subsection{Interfaccia Pubblica}
+
+La classe espone quattro metodi pubblici:
+
+\begin{itemize}
+    \item \texttt{void insert(const string\& key, const string\& value)} --- 
+    inserisce una coppia \texttt{(chiave, valore)};
+    \item \texttt{void search(const string\& key, const string\& value)} --- 
+    ricerca una chiave e stampa il valore associato;
+    \item \texttt{void remove(const string\& key, const string\& value)} --- 
+    rimuove una coppia \texttt{(chiave, valore)};
+    \item \texttt{void print()} --- stampa l'albero in forma grafica.
+\end{itemize}
+
+\subsection{Metodi Privati}
+
+I metodi privati supportano le operazioni pubbliche:
+
+\begin{itemize}
+    \item \texttt{hashFunction} --- calcola l'hash della chiave;
+    \item \texttt{leftRotate}, \texttt{rightRotate} --- rotazioni per il 
+    bilanciamento;
+    \item \texttt{insertFix}, \texttt{deleteFix} --- ripristino delle proprietà 
+    RBT dopo inserimento e cancellazione;
+    \item \texttt{transplant} --- sostituzione di un sottoalbero con un altro;
+    \item \texttt{minimum} --- nodo con id minimo in un sottoalbero;
+    \item \texttt{searchNode} --- ricerca interna per id;
+    \item \texttt{printHelper}, \texttt{destroyTree} --- supporto a stampa e 
+    distruzione.
+\end{itemize}

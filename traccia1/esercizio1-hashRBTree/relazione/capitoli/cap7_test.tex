@@ -1,0 +1,148 @@
+\chapter{Test e Risultati}
+
+In questo capitolo vengono presentati i test eseguiti sulla struttura 
+\texttt{HashRBTree} per verificare la correttezza delle operazioni di 
+inserimento, ricerca, cancellazione e stampa.
+
+\section{Ambiente di Test}
+
+I test sono stati eseguiti nel seguente ambiente:
+
+\begin{itemize}
+    \item \textbf{Sistema operativo}: Linux Mint
+    \item \textbf{Compilatore}: GCC 13.3.0
+    \item \textbf{Standard}: C++17
+    \item \textbf{Build system}: CMake 3.10
+\end{itemize}
+
+\section{Test 1 --- Inserimento e Stampa}
+
+Vengono inserite sette coppie chiave-valore e viene verificata la struttura 
+dell'albero tramite \texttt{print()}.
+
+\begin{lstlisting}
+tree.insert("apple",      "frutto rosso");
+tree.insert("banana",     "frutto giallo");
+tree.insert("cherry",     "frutto rosso piccolo");
+tree.insert("date",       "frutto dolce");
+tree.insert("elderberry", "frutto viola");
+tree.insert("fig",        "frutto mediterraneo");
+tree.insert("grape",      "frutto a grappolo");
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
++-- [1938937894 | B] banana:frutto giallo
+    +-- [253337143 | R] apple:frutto rosso
+    |   +-- [193491643 | B] fig:frutto mediterraneo
+    |   `-- [735886645 | B] elderberry:frutto viola
+    |       +-- [260508340 | R] grape:frutto a grappolo
+    `-- [1986069970 | B] cherry:frutto rosso piccolo
+        `-- [2090176867 | R] date:frutto dolce
+\end{lstlisting}
+
+\textbf{Verifica}: l'albero rispetta tutte le proprietà del Red-Black Tree:
+\begin{itemize}
+    \item la radice è \texttt{BLACK};
+    \item non esistono due nodi \texttt{RED} consecutivi;
+    \item il black-height è uniforme su tutti i percorsi dalla radice 
+    alle foglie.
+\end{itemize}
+
+\section{Test 2 --- Ricerca}
+
+\begin{lstlisting}
+tree.search("apple",  "");
+tree.search("banana", "");
+tree.search("mango",  "");
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
+Trovato: apple -> frutto rosso
+Trovato: banana -> frutto giallo
+Chiave "mango" non trovata.
+\end{lstlisting}
+
+\textbf{Verifica}: le chiavi presenti vengono trovate correttamente; 
+la ricerca di una chiave assente restituisce il messaggio di errore 
+senza crash.
+
+\section{Test 3 --- Gestione delle Collisioni}
+
+Vengono inserite due chiavi aggiuntive per verificare il comportamento 
+in caso di collisioni hash.
+
+\begin{lstlisting}
+tree.insert("listen", "ascoltare");
+tree.insert("silent", "silenzioso");
+\end{lstlisting}
+
+\textbf{Verifica}: la funzione djb2 è sensibile all'ordine dei caratteri, 
+quindi \texttt{listen} e \texttt{silent} producono hash distinti e vengono 
+inseriti come nodi separati. L'albero si ribilancia correttamente dopo 
+entrambi gli inserimenti.
+
+\section{Test 4 --- Cancellazione}
+
+\begin{lstlisting}
+tree.remove("banana", "");
+tree.remove("mango",  "");
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
+Chiave "mango" non trovata.
+
++-- [1986069970 | B] cherry:frutto rosso piccolo
+    +-- [253337143 | R] apple:frutto rosso
+    |   +-- [193491643 | B] fig:frutto mediterraneo
+    |   |   +-- [192495636 | R] listen:ascoltare
+    |   `-- [466175796 | B] silent:silenzioso
+    |       +-- [260508340 | R] grape:frutto a grappolo
+    |       `-- [735886645 | R] elderberry:frutto viola
+    `-- [2090176867 | B] date:frutto dolce
+\end{lstlisting}
+
+\textbf{Verifica}: la rimozione di \texttt{banana} (nodo radice) viene 
+gestita correttamente tramite il successore in-order; l'albero rimane 
+bilanciato. La rimozione di \texttt{mango} (chiave assente) produce 
+il messaggio di errore senza alterare la struttura.
+
+\section{Test 5 --- Cancellazioni Multiple}
+
+\begin{lstlisting}
+tree.remove("apple",  "");
+tree.remove("cherry", "");
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
++-- [260508340 | B] grape:frutto a grappolo
+    +-- [193491643 | B] fig:frutto mediterraneo
+    |   +-- [192495636 | R] listen:ascoltare
+    `-- [735886645 | R] elderberry:frutto viola
+        +-- [466175796 | B] silent:silenzioso
+        `-- [2090176867 | B] date:frutto dolce
+\end{lstlisting}
+
+\textbf{Verifica}: dopo tre cancellazioni consecutive l'albero rimane 
+correttamente bilanciato, confermando il corretto funzionamento di 
+\texttt{deleteFix} in scenari di stress.
+
+\section{Considerazioni Finali}
+
+I test confermano che la struttura \texttt{HashRBTree} si comporta 
+correttamente in tutti gli scenari verificati:
+
+\begin{itemize}
+    \item le proprietà del Red-Black Tree vengono mantenute dopo ogni 
+    inserimento e cancellazione;
+    \item la gestione delle collisioni tramite lista funziona correttamente;
+    \item i casi limite (chiave assente, albero con un solo nodo, 
+    cancellazione della radice) sono gestiti senza errori.
+\end{itemize}

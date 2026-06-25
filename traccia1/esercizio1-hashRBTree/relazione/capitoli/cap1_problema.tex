@@ -1,0 +1,43 @@
+\chapter{Descrizione del Problema}
+
+Il problema richiede la progettazione e l'implementazione di una struttura dati ibrida 
+denominata \textbf{HashRBTree}, che combina le proprietà di una funzione di hash con 
+quelle di un albero Red-Black (RBT).
+
+L'obiettivo è realizzare una struttura in grado di memorizzare coppie 
+\texttt{(chiave, valore)} di tipo stringa, supportando efficientemente le operazioni 
+fondamentali di un dizionario:
+
+\begin{itemize}
+    \item \textbf{Inserimento} di una coppia \texttt{(chiave, valore)};
+    \item \textbf{Ricerca} del valore associato a una chiave;
+    \item \textbf{Cancellazione} di una coppia \texttt{(chiave, valore)}.
+\end{itemize}
+
+\section{Approccio Adottato}
+
+La chiave viene trasformata in un intero tramite una funzione di hash, che diventa 
+l'identificatore (\texttt{id}) del nodo all'interno dell'albero Red-Black. 
+L'albero è quindi organizzato sui valori di \texttt{id}, garantendo ricerca, 
+inserimento e cancellazione in tempo $O(\log n)$.
+
+Le \textbf{collisioni} --- situazioni in cui due chiavi diverse producono lo stesso 
+valore di hash --- vengono gestite tramite una lista concatenata associata a ciascun 
+nodo. Ogni nodo dell'albero mantiene una \texttt{std::list} di coppie 
+\texttt{(chiave, valore)}, consentendo la coesistenza di più entry con lo stesso 
+identificatore.
+
+\section{Motivazioni della Scelta}
+
+La combinazione di hash e Red-Black Tree offre un compromesso vantaggioso:
+
+\begin{itemize}
+    \item La \textbf{funzione di hash} riduce lo spazio delle chiavi (stringhe 
+    arbitrarie) a un insieme di interi, rendendo possibile un ordinamento totale 
+    dei nodi;
+    \item Il \textbf{Red-Black Tree} garantisce il bilanciamento automatico 
+    dell'albero, assicurando complessità logaritmica nel caso peggiore a differenza 
+    delle hash table classiche che degradano a $O(n)$ in caso di molte collisioni;
+    \item La \textbf{lista di collisione} per nodo gestisce in modo semplice ed 
+    efficace le rare collisioni di hash senza richiedere strutture aggiuntive.
+\end{itemize}

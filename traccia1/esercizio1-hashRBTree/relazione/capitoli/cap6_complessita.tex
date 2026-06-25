@@ -1,0 +1,123 @@
+\chapter{Studio della Complessità}
+
+In questo capitolo viene analizzata la complessità temporale e spaziale 
+delle operazioni principali della struttura \texttt{HashRBTree}.
+
+\section{Complessità Temporale}
+
+\subsection{Funzione di Hash}
+
+La funzione \texttt{hashFunction} itera su tutti i caratteri della chiave 
+eseguendo un numero costante di operazioni per ciascuno. La complessità è:
+
+\begin{equation}
+    T_{hash} = O(m)
+\end{equation}
+
+dove $m$ è la lunghezza della chiave in caratteri.
+
+\subsection{Ricerca nell'Albero}
+
+Il metodo \texttt{searchNode} naviga l'albero Red-Black dall'alto verso il 
+basso confrontando il valore \texttt{id} ad ogni nodo. Poiché l'albero è 
+bilanciato per costruzione, l'altezza è garantita essere $O(\log n)$, dove 
+$n$ è il numero di nodi distinti nell'albero. La complessità è:
+
+\begin{equation}
+    T_{searchNode} = O(\log n)
+\end{equation}
+
+\subsection{Ricerca nella Lista di Collisione}
+
+Una volta individuato il nodo tramite \texttt{searchNode}, il metodo 
+\texttt{search} scorre la lista \texttt{items} per trovare la chiave esatta. 
+Indicando con $k$ il numero di coppie in collisione su quel nodo:
+
+\begin{equation}
+    T_{search} = O(m + \log n + k)
+\end{equation}
+
+Nel caso medio, con una buona funzione di hash, $k$ è costante e la 
+complessità si riduce a $O(m + \log n)$.
+
+\subsection{Inserimento}
+
+L'operazione \texttt{insert} esegue in sequenza:
+
+\begin{enumerate}
+    \item Calcolo dell'hash: $O(m)$
+    \item Ricerca del nodo: $O(\log n)$
+    \item In caso di collisione, aggiunta in coda alla lista: $O(k)$
+    \item In caso di nuovo nodo, inserimento BST: $O(\log n)$
+    \item Ripristino proprietà RBT con \texttt{insertFix}: $O(\log n)$
+\end{enumerate}
+
+La complessità complessiva è:
+
+\begin{equation}
+    T_{insert} = O(m + \log n)
+\end{equation}
+
+\texttt{insertFix} esegue al più $O(\log n)$ recoloring risalendo l'albero, 
+e al più 2 rotazioni che sono operazioni $O(1)$.
+
+\subsection{Cancellazione}
+
+L'operazione \texttt{remove} esegue in sequenza:
+
+\begin{enumerate}
+    \item Calcolo dell'hash: $O(m)$
+    \item Ricerca del nodo: $O(\log n)$
+    \item Rimozione dalla lista: $O(k)$
+    \item Se la lista è vuota, rimozione dall'albero: $O(\log n)$
+    \item Ripristino proprietà RBT con \texttt{deleteFix}: $O(\log n)$
+\end{enumerate}
+
+La complessità complessiva è:
+
+\begin{equation}
+    T_{remove} = O(m + \log n)
+\end{equation}
+
+\texttt{deleteFix} esegue al più $O(\log n)$ recoloring e al più 3 rotazioni.
+
+\subsection{Riepilogo}
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Operazione} & \textbf{Caso Medio} & \textbf{Caso Peggiore} \\
+\hline
+\texttt{hashFunction} & $O(m)$ & $O(m)$ \\
+\hline
+\texttt{search}       & $O(m + \log n)$ & $O(m + \log n + k)$ \\
+\hline
+\texttt{insert}       & $O(m + \log n)$ & $O(m + \log n + k)$ \\
+\hline
+\texttt{remove}       & $O(m + \log n)$ & $O(m + \log n + k)$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+dove $n$ è il numero di nodi nell'albero, $m$ è la lunghezza della chiave 
+e $k$ è il numero di collisioni sul nodo.
+
+\section{Complessità Spaziale}
+
+La struttura occupa in memoria:
+
+\begin{itemize}
+    \item $O(n)$ per i nodi dell'albero, dove $n$ è il numero di chiavi 
+    distinte per hash;
+    \item $O(n + p)$ considerando anche le coppie nelle liste di collisione, 
+    dove $p$ è il numero totale di coppie inserite;
+    \item $O(\log n)$ per lo stack delle chiamate ricorsive di 
+    \texttt{printHelper} e \texttt{destroyTree}.
+\end{itemize}
+
+La complessità spaziale complessiva è:
+
+\begin{equation}
+    S = O(n + p)
+\end{equation}

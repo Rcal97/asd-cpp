@@ -1,0 +1,77 @@
+\chapter{Formato dei Dati di Input e Output}
+
+\section{Input}
+
+La struttura \texttt{HashRBTree} accetta in input coppie di stringhe 
+\texttt{(chiave, valore)} tramite i metodi pubblici \texttt{insert}, 
+\texttt{search} e \texttt{remove}. Non è previsto un formato di file esterno: 
+le operazioni vengono invocate direttamente nel codice, come mostrato nel 
+file \texttt{main.cpp}.
+
+Ogni operazione richiede i seguenti parametri:
+
+\begin{itemize}
+    \item \texttt{insert(key, value)} --- due stringhe: la chiave da inserire 
+    e il valore associato;
+    \item \texttt{search(key, value)} --- la chiave da cercare (il parametro 
+    \texttt{value} è ignorato in questa operazione);
+    \item \texttt{remove(key, value)} --- la chiave della coppia da rimuovere 
+    (il parametro \texttt{value} è ignorato in questa operazione).
+\end{itemize}
+
+\section{Output}
+
+L'output è prodotto su \texttt{stdout} tramite \texttt{std::cout}. 
+Le operazioni producono i seguenti messaggi:
+
+\subsection{Search}
+
+\begin{itemize}
+    \item Se la chiave è presente:
+\begin{lstlisting}
+Trovato: [chiave] -> valore
+\end{lstlisting}
+    \item Se la chiave non è presente:
+\begin{lstlisting}
+Chiave "chiave" non trovata.
+\end{lstlisting}
+\end{itemize}
+
+\subsection{Remove}
+
+\begin{itemize}
+    \item Se la chiave non è presente:
+\begin{lstlisting}
+Chiave "chiave" non trovata.
+\end{lstlisting}
+\end{itemize}
+
+\subsection{Print}
+
+Il metodo \texttt{print()} produce una rappresentazione grafica dell'albero 
+con indentazione progressiva. Ogni nodo è stampato nel formato:
+
+\begin{lstlisting}
+[id | colore] chiave:valore, chiave2:valore2
+\end{lstlisting}
+
+dove \texttt{colore} è \texttt{R} per \texttt{RED} e \texttt{B} per 
+\texttt{BLACK}. I simboli \texttt{+--}, \texttt{`--} e \texttt{|} 
+indicano la struttura gerarchica dell'albero. Un esempio di output:
+
+\begin{lstlisting}
++-- [1938937894 | B] banana:frutto giallo
+    +-- [253337143 | R] apple:frutto rosso
+    |   +-- [193491643 | B] fig:frutto mediterraneo
+    |   `-- [735886645 | B] elderberry:frutto viola
+    `-- [1986069970 | B] cherry:frutto rosso piccolo
+        `-- [2090176867 | R] date:frutto dolce
+\end{lstlisting}
+
+\subsection{Albero Vuoto}
+
+Se \texttt{print()} viene invocato su un albero privo di elementi:
+
+\begin{lstlisting}
+Albero vuoto.
+\end{lstlisting}
