@@ -1,0 +1,83 @@
+\chapter{Formato dei Dati di Input e Output}
+
+\section{Input}
+
+Il programma legge i dati da un file di testo passato come argomento 
+da riga di comando:
+
+\begin{lstlisting}
+./percorsi input.txt
+\end{lstlisting}
+
+Il file di input ha il seguente formato:
+
+\begin{itemize}
+    \item \textbf{Prima riga}: due interi separati da uno spazio, 
+    $N$ e $P$, dove $N$ è il numero di città (numerate da $1$ a $N$, 
+    con $0$ che rappresenta la capitale) e $P$ è il numero di tratte;
+    \item \textbf{Righe successive}: $P$ righe, ciascuna contenente 
+    tre interi $S$, $E$, $C$ separati da uno spazio, dove $S$ è la 
+    città di partenza, $E$ è la città di arrivo e $C$ è il costo 
+    della tratta.
+\end{itemize}
+
+Le tratte sono \textbf{non orientate}: una tratta $(S, E, C)$ consente 
+di viaggiare sia da $S$ a $E$ che da $E$ a $S$ con lo stesso costo $C$.
+
+\subsection{Assunzioni}
+
+\begin{itemize}
+    \item $2 \leq N \leq 1000$
+    \item $1 \leq P \leq 10000$
+    \item $0 \leq S_i \leq N$ per ogni $i = 1, \ldots, P$
+    \item $0 \leq E_i \leq N$ per ogni $i = 1, \ldots, P$
+    \item $1 \leq C_i \leq 10000$ per ogni $i = 1, \ldots, P$
+\end{itemize}
+
+\subsection{Esempio di File di Input}
+
+\begin{lstlisting}
+4 6
+0 1 4
+0 2 1
+1 3 2
+1 4 12
+2 3 4
+3 4 5
+\end{lstlisting}
+
+\section{Output}
+
+Il programma stampa su \texttt{stdout} una riga per ogni città 
+raggiungibile dalla capitale (dalla città $1$ alla città $N$), 
+nel seguente formato:
+
+\begin{lstlisting}
+S->...->E = totale-sconto=finale
+\end{lstlisting}
+
+dove:
+\begin{itemize}
+    \item \texttt{S->...->E} --- sequenza di città del percorso ottimo, 
+    separate da \texttt{->};
+    \item \texttt{totale} --- somma dei costi di tutte le tratte 
+    del percorso;
+    \item \texttt{sconto} --- costo della tratta più onerosa del percorso;
+    \item \texttt{finale} --- costo effettivo dopo lo sconto 
+    (\texttt{totale} $-$ \texttt{sconto}).
+\end{itemize}
+
+Se una città non è raggiungibile dalla capitale, viene stampato:
+
+\begin{lstlisting}
+Citta N: non raggiungibile
+\end{lstlisting}
+
+\subsection{Esempio di Output}
+
+\begin{lstlisting}
+0->1 = 4-4=0
+0->2 = 1-1=0
+0->2->3 = 5-4=1
+0->1->4 = 16-12=4
+\end{lstlisting}

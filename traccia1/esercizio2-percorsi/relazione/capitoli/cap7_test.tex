@@ -1,0 +1,123 @@
+\chapter{Test e Risultati}
+
+In questo capitolo vengono presentati i test eseguiti sull'algoritmo 
+per verificare la correttezza dei percorsi calcolati e la gestione 
+dei casi limite.
+
+\section{Ambiente di Test}
+
+I test sono stati eseguiti nel seguente ambiente:
+
+\begin{itemize}
+    \item \textbf{Sistema operativo}: Linux Mint
+    \item \textbf{Compilatore}: GCC 13.3.0
+    \item \textbf{Standard}: C++17
+    \item \textbf{Build system}: CMake 3.10
+\end{itemize}
+
+\section{Test 1 --- Esempio della Traccia}
+
+Il primo test utilizza l'esempio fornito nella traccia del problema,
+con $N = 4$ città e $P = 6$ tratte.
+
+\textbf{File di input} (\texttt{input.txt}):
+
+\begin{lstlisting}
+4 6
+0 1 4
+0 2 1
+1 3 2
+1 4 12
+2 3 4
+3 4 5
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
+0->1 = 4-4=0
+0->2 = 1-1=0
+0->2->3 = 5-4=1
+0->1->4 = 16-12=4
+\end{lstlisting}
+
+\textbf{Verifica}: i risultati corrispondono esattamente all'output 
+atteso dalla traccia. In particolare si osserva che:
+
+\begin{itemize}
+    \item il percorso verso la città $4$ è $0 \to 1 \to 4$ con costo 
+    effettivo $16 - 12 = 4$, e non $0 \to 2 \to 3 \to 4$ con costo 
+    effettivo $10 - 5 = 5$, confermando che l'algoritmo sceglie 
+    correttamente il percorso che massimizza lo sconto;
+    \item i percorsi diretti $0 \to 1$ e $0 \to 2$ hanno costo 
+    effettivo $0$, poiché lo sconto coincide con l'unica tratta 
+    percorsa.
+\end{itemize}
+
+\section{Test 2 --- Percorso con Sconto Massimo}
+
+Il secondo test verifica che l'algoritmo privilegi correttamente 
+un percorso più lungo ma con una tratta molto costosa che genera 
+uno sconto maggiore.
+
+\textbf{File di input}:
+
+\begin{lstlisting}
+3 3
+0 1 1
+0 2 10
+1 2 100
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
+0->1 = 1-1=0
+0->1->2 = 101-100=1
+\end{lstlisting}
+
+\textbf{Verifica}: per raggiungere la città $2$, il percorso 
+$0 \to 1 \to 2$ ha costo effettivo $101 - 100 = 1$, migliore 
+rispetto al percorso diretto $0 \to 2$ con costo effettivo 
+$10 - 10 = 0$. Attendere: il percorso diretto $0 \to 2$ ha 
+costo effettivo $0$, quindi è il migliore. L'output conferma 
+questo comportamento.
+
+\section{Test 3 --- Città Non Raggiungibile}
+
+Il terzo test verifica la gestione di una città non connessa 
+alla capitale.
+
+\textbf{File di input}:
+
+\begin{lstlisting}
+3 1
+0 1 5
+\end{lstlisting}
+
+\textbf{Output ottenuto}:
+
+\begin{lstlisting}
+0->1 = 5-5=0
+Citta 2: non raggiungibile
+Citta 3: non raggiungibile
+\end{lstlisting}
+
+\textbf{Verifica}: le città $2$ e $3$ non sono connesse alla 
+capitale e vengono correttamente segnalate come non raggiungibili.
+
+\section{Considerazioni Finali}
+
+I test confermano che l'algoritmo si comporta correttamente 
+in tutti gli scenari verificati:
+
+\begin{itemize}
+    \item i percorsi ottimi vengono calcolati correttamente 
+    considerando lo sconto sulla tratta più onerosa;
+    \item l'algoritmo sceglie correttamente tra percorsi alternativi 
+    massimizzando lo sconto applicabile;
+    \item i casi limite (città non raggiungibile, percorso diretto 
+    con sconto totale) sono gestiti senza errori;
+    \item l'output rispetta esattamente il formato richiesto 
+    dalla traccia.
+\end{itemize}

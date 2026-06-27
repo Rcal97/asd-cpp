@@ -1,0 +1,96 @@
+\chapter{Descrizione delle Strutture Dati}
+
+\section{Edge}
+
+La struttura \texttt{Edge} rappresenta una tratta del grafo nella lista 
+di adiacenza. È definita come segue:
+
+\begin{lstlisting}
+struct Edge {
+    int dest;
+    int cost;
+};
+\end{lstlisting}
+
+\begin{itemize}
+    \item \texttt{dest} --- indice della città di destinazione;
+    \item \texttt{cost} --- costo intero positivo della tratta.
+\end{itemize}
+
+\section{State}
+
+La struttura \texttt{State} rappresenta uno stato nella coda di priorità 
+della variante di Dijkstra. A differenza dell'algoritmo classico, che 
+mantiene solo la distanza dal nodo sorgente, è necessario tenere traccia 
+anche della tratta più costosa percorsa fino a quel momento:
+
+\begin{lstlisting}
+struct State {
+    int totalCost;
+    int maxCost;
+    int node;
+
+    int effectiveCost() const {
+        return totalCost - maxCost;
+    }
+
+    bool operator>(const State& other) const {
+        return effectiveCost() > other.effectiveCost();
+    }
+};
+\end{lstlisting}
+
+\begin{itemize}
+    \item \texttt{totalCost} --- somma dei costi di tutte le tratte 
+    percorse dal nodo sorgente fino al nodo corrente;
+    \item \texttt{maxCost} --- costo della tratta più onerosa nel 
+    percorso corrente, che rappresenta lo sconto applicabile;
+    \item \texttt{node} --- indice del nodo corrente;
+    \item \texttt{effectiveCost()} --- calcola il costo effettivo dopo 
+    lo sconto: $\texttt{totalCost} - \texttt{maxCost}$;
+    \item \texttt{operator>} --- operatore di confronto per la 
+    \texttt{priority\_queue}, che ordina gli stati per costo effettivo 
+    minimo (min-heap).
+\end{itemize}
+
+\section{Graph}
+
+La classe \texttt{Graph} incapsula l'intera struttura del grafo e 
+le operazioni su di esso. Internamente mantiene:
+
+\begin{itemize}
+    \item \texttt{int N} --- numero di città nel grafo;
+    \item \texttt{vector<vector<Edge>> adj} --- lista di adiacenza: 
+    per ogni città $v$, \texttt{adj[v]} contiene la lista delle tratte 
+    uscenti da $v$.
+\end{itemize}
+
+\subsection{Lista di Adiacenza}
+
+La rappresentazione scelta è la \textbf{lista di adiacenza} tramite 
+\texttt{std::vector<std::vector<Edge>>}. Questa scelta è motivata dalle 
+caratteristiche del problema:
+
+\begin{itemize}
+    \item il numero di tratte $P$ può essere molto inferiore a $N^2$, 
+    rendendo la matrice di adiacenza spreca di memoria;
+    \item la lista di adiacenza occupa $O(N + P)$ in memoria;
+    \item l'iterazione sulle tratte uscenti da un nodo, operazione 
+    centrale in Dijkstra, è efficiente con questa rappresentazione.
+\end{itemize}
+
+\subsection{Vettori Ausiliari in Dijkstra}
+
+Durante l'esecuzione di \texttt{dijkstra()} vengono utilizzati i 
+seguenti vettori ausiliari di dimensione $N$:
+
+\begin{itemize}
+    \item \texttt{dist[v]} --- miglior costo effettivo trovato per 
+    raggiungere la città $v$;
+    \item \texttt{totalCost[v]} --- costo totale del percorso ottimo 
+    verso $v$, necessario per l'output;
+    \item \texttt{maxEdge[v]} --- tratta più costosa nel percorso ottimo 
+    verso $v$, necessaria per l'output;
+    \item \texttt{parent[v]} --- città precedente nel percorso ottimo 
+    verso $v$, necessario per la ricostruzione del percorso.
+\end{itemize}

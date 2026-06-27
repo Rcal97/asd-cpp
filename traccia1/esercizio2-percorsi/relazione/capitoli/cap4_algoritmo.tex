@@ -1,0 +1,131 @@
+\chapter{Descrizione dell'Algoritmo}
+
+\section{Idea Generale}
+
+Il problema richiede di trovare, per ogni città $v$, il percorso dalla 
+capitale $0$ a $v$ che minimizza la funzione:
+
+\begin{equation}
+    f(\pi) = \sum_{e \in \pi} c(e) - \max_{e \in \pi} c(e)
+\end{equation}
+
+Questa funzione obiettivo non è decomponibile nel senso classico di 
+Dijkstra: il costo effettivo di un percorso dipende dalla tratta massima 
+dell'intero percorso, che non è nota fino al completamento del percorso stesso.
+
+La soluzione adottata è una \textbf{variante di Dijkstra} in cui lo stato 
+non è semplicemente la distanza dal nodo sorgente, ma una coppia 
+$(\texttt{totalCost}, \texttt{maxCost})$ che permette di calcolare il 
+costo effettivo in ogni momento.
+
+\section{Variante di Dijkstra}
+
+\subsection{Stato}
+
+Ogni elemento della coda di priorità è uno \texttt{State}:
+
+\begin{lstlisting}
+State {
+    int totalCost;  // somma dei costi delle tratte percorse
+    int maxCost;    // costo della tratta piu' onerosa
+    int node;       // nodo corrente
+}
+\end{lstlisting}
+
+Il costo effettivo di uno stato è \texttt{totalCost - maxCost}.
+
+\subsection{Inizializzazione}
+
+La coda di priorità viene inizializzata con lo stato della capitale:
+
+\begin{lstlisting}
+dist[0]      = 0;
+totalCost[0] = 0;
+maxEdge[0]   = 0;
+pq.push({0, 0, 0});
+\end{lstlisting}
+
+Tutti gli altri nodi vengono inizializzati con distanza $+\infty$.
+
+\subsection{Rilassamento}
+
+Per ogni arco $(u, v, c)$ estratto dalla coda, il nuovo stato verso $v$ è:
+
+\begin{equation}
+    \texttt{newTotal} = \texttt{curr.totalCost} + c
+\end{equation}
+\begin{equation}
+    \texttt{newMax} = \max(\texttt{curr.maxCost},\ c)
+\end{equation}
+\begin{equation}
+    \texttt{newEff} = \texttt{newTotal} - \texttt{newMax}
+\end{equation}
+
+Se \texttt{newEff} $<$ \texttt{dist[v]}, lo stato viene aggiornato e 
+inserito nella coda:
+
+\begin{lstlisting}
+if (newEff < dist[e.dest]) {
+    dist[e.dest]      = newEff;
+    totalCost[e.dest] = newTotal;
+    maxEdge[e.dest]   = newMax;
+    parent[e.dest]    = curr.node;
+    pq.push({newTotal, newMax, e.dest});
+}
+\end{lstlisting}
+
+\subsection{Gestione degli Stati Obsoleti}
+
+Poiché la coda di priorità può contenere più stati per lo stesso nodo, 
+viene utilizzato il controllo:
+
+\begin{lstlisting}
+if (curr.effectiveCost() > dist[curr.node])
+    continue;
+\end{lstlisting}
+
+Questo scarta gli stati inseriti in precedenza e superati da uno 
+migliore, evitando elaborazioni inutili.
+
+\subsection{Terminazione}
+
+L'algoritmo termina quando la coda di priorità è vuota. A quel punto, 
+per ogni nodo $v$, \texttt{dist[v]} contiene il costo effettivo minimo 
+del percorso ottimo dalla capitale.
+
+\section{Ricostruzione del Percorso}
+
+Il percorso ottimo viene ricostruito tramite il vettore \texttt{parent}, 
+che per ogni nodo $v$ memorizza il nodo precedente nel percorso ottimo. 
+Il metodo \texttt{reconstructPath} risale il vettore da \texttt{dest} 
+fino alla capitale, producendo il percorso in ordine inverso, che viene 
+poi ribaltato:
+
+\begin{lstlisting}
+vector<int> path;
+int v = dest;
+while (v != -1) {
+    path.push_back(v);
+    v = parent[v];
+}
+reverse(path.begin(), path.end());
+\end{lstlisting}
+
+\section{Correttezza}
+
+La correttezza dell'algoritmo si basa sul fatto che la funzione 
+\texttt{effectiveCost} è \textbf{monotona non decrescente} lungo 
+qualsiasi percorso: aggiungere una tratta non può diminuire il costo 
+effettivo, poiché il nuovo \texttt{totalCost} aumenta sempre di almeno 
+1 (i costi sono positivi) mentre il nuovo \texttt{maxCost} può solo 
+rimanere uguale o aumentare. Questa proprietà garantisce che il primo 
+percorso estratto dalla coda per un nodo sia quello ottimo, 
+analogamente al Dijkstra classico.
+
+\section{Lettura dell'Input}
+
+Il file di input viene letto in \texttt{main.cpp} tramite 
+\texttt{std::ifstream}. La prima riga fornisce $N$ e $P$; le successive 
+$P$ righe forniscono le tratte $(S, E, C)$ che vengono aggiunte al 
+grafo tramite \texttt{addEdge}, che inserisce ogni tratta in entrambe 
+le direzioni essendo il grafo non orientato.

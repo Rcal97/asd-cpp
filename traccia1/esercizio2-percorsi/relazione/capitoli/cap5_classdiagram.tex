@@ -1,0 +1,44 @@
+\chapter{Class Diagram}
+
+Di seguito viene presentato il diagramma delle classi della struttura 
+\texttt{Graph}, realizzato seguendo la notazione UML.
+
+\section{Struttura Generale}
+
+Il sistema è composto da tre elementi principali:
+
+\begin{itemize}
+    \item la struttura \texttt{Edge}, che rappresenta una tratta 
+    del grafo;
+    \item la struttura \texttt{State}, che rappresenta uno stato 
+    nella coda di priorità della variante di Dijkstra;
+    \item la classe \texttt{Graph}, che incapsula il grafo e 
+    l'algoritmo di ricerca del percorso ottimo.
+\end{itemize}
+
+\section{Diagramma UML}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{images/classdiagram.png}
+\caption{Class diagram UML di Percorsi nell'Arcipelago}
+\label{fig:classdiagram}
+\end{figure}
+
+\section{Relazioni tra le Classi}
+
+\begin{itemize}
+    \item \textbf{Graph} ha una relazione di \textbf{composizione} 
+    con \texttt{Edge}: gli archi sono contenuti nella lista di 
+    adiacenza \texttt{adj} e il loro ciclo di vita è interamente 
+    gestito da \texttt{Graph}.
+    \item \textbf{Graph} ha una relazione di \textbf{dipendenza} 
+    con \texttt{State}: la struttura \texttt{State} viene creata 
+    e utilizzata localmente all'interno del metodo 
+    \texttt{dijkstra()}, senza essere memorizzata come attributo 
+    della classe.
+    \item \textbf{State} espone il metodo \texttt{effectiveCost()} 
+    e l'\texttt{operator>} che permettono alla 
+    \texttt{priority\_queue} di ordinare gli stati per costo 
+    effettivo minimo, realizzando un min-heap.
+\end{itemize}

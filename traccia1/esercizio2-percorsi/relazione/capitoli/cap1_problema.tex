@@ -1,0 +1,70 @@
+\chapter{Descrizione del Problema}
+
+Il problema è ambientato nello stato immaginario di Grapha-Nui, il cui governo 
+vuole incentivare l'utilizzo del servizio pubblico di mobilità. A tal fine 
+promuove un abbonamento mensile che consente di percorrere un unico tragitto 
+dalla città capitale fino a qualunque altra città dello stato, con la possibilità 
+di ottenere uno sconto pari al costo della tratta più onerosa del percorso scelto.
+
+L'obiettivo è progettare un algoritmo che, data una piantina dello stato con 
+tutte le tratte e i relativi costi, aiuti i cittadini a scegliere il percorso 
+più economico dalla capitale verso ogni altra città, considerando lo sconto 
+pari alla tratta più costosa del percorso.
+
+\section{Definizione Formale}
+
+Dato un grafo pesato non orientato $G = (V, E)$ dove:
+
+\begin{itemize}
+    \item $V$ è l'insieme delle città, numerate da $0$ a $N$, dove $0$ 
+    rappresenta la capitale;
+    \item $E$ è l'insieme delle tratte, ciascuna con un costo intero positivo;
+\end{itemize}
+
+si vuole determinare, per ogni città $v \in V \setminus \{0\}$, il percorso 
+$\pi$ dalla capitale $0$ a $v$ che minimizza la funzione:
+
+\begin{equation}
+    f(\pi) = \sum_{e \in \pi} c(e) - \max_{e \in \pi} c(e)
+\end{equation}
+
+dove $c(e)$ è il costo della tratta $e$ e il termine $\max_{e \in \pi} c(e)$ 
+rappresenta lo sconto applicato (costo della tratta più onerosa del percorso).
+
+\section{Esempio}
+
+Dato il seguente grafo con $N = 4$ città e $P = 6$ tratte:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Partenza} & \textbf{Arrivo} & \textbf{Costo} \\
+\hline
+0 & 1 & 4  \\
+0 & 2 & 1  \\
+1 & 3 & 2  \\
+1 & 4 & 12 \\
+2 & 3 & 4  \\
+3 & 4 & 5  \\
+\hline
+\end{tabular}
+\end{center}
+
+I percorsi ottimi dalla capitale sono:
+
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Percorso} & \textbf{Costo totale} & \textbf{Sconto} & \textbf{Costo finale} \\
+\hline
+$0 \to 1$         & 4  & 4  & 0 \\
+$0 \to 2$         & 1  & 1  & 0 \\
+$0 \to 2 \to 3$   & 5  & 4  & 1 \\
+$0 \to 1 \to 4$   & 16 & 12 & 4 \\
+\hline
+\end{tabular}
+\end{center}
+
+Si noti che per raggiungere la città $4$, il percorso ottimo non è 
+$0 \to 2 \to 3 \to 4$ (costo $10 - 5 = 5$) bensì $0 \to 1 \to 4$ 
+(costo $16 - 12 = 4$), grazie allo sconto sulla tratta più costosa.

@@ -1,0 +1,114 @@
+\chapter{Studio della Complessità}
+
+In questo capitolo viene analizzata la complessità temporale e spaziale 
+dell'algoritmo implementato per il problema dei Percorsi nell'Arcipelago.
+
+\section{Complessità Temporale}
+
+\subsection{Lettura dell'Input}
+
+La lettura del file di input richiede la lettura di $P$ tratte, ciascuna 
+in tempo costante. La complessità è:
+
+\begin{equation}
+    T_{input} = O(P)
+\end{equation}
+
+\subsection{Costruzione del Grafo}
+
+Il metodo \texttt{addEdge} viene invocato $P$ volte, ciascuna in tempo 
+$O(1)$ (inserimento in fondo a un vettore). La complessità è:
+
+\begin{equation}
+    T_{build} = O(P)
+\end{equation}
+
+\subsection{Variante di Dijkstra}
+
+L'algoritmo utilizza una coda di priorità implementata come min-heap 
+tramite \texttt{std::priority\_queue}. Ogni nodo può essere inserito 
+nella coda più volte (una per ogni arco che lo raggiunge), quindi il 
+numero massimo di elementi nella coda è $O(P)$.
+
+Le operazioni principali sono:
+
+\begin{itemize}
+    \item \textbf{Estrazione dalla coda}: al più $O(P)$ estrazioni, 
+    ciascuna in tempo $O(\log P)$;
+    \item \textbf{Inserimento nella coda}: al più $O(P)$ inserimenti, 
+    ciascuno in tempo $O(\log P)$;
+    \item \textbf{Rilassamento degli archi}: ogni arco viene esaminato 
+    al più due volte (grafo non orientato), per un totale di $O(P)$ 
+    rilassamenti in tempo $O(1)$ ciascuno.
+\end{itemize}
+
+La complessità complessiva della variante di Dijkstra è:
+
+\begin{equation}
+    T_{dijkstra} = O(P \log P)
+\end{equation}
+
+\subsection{Ricostruzione dei Percorsi}
+
+Per ogni città $v$ da $1$ a $N$, il metodo \texttt{reconstructPath} 
+risale il vettore \texttt{parent} per al più $N$ passi. La complessità 
+complessiva per tutti i percorsi è:
+
+\begin{equation}
+    T_{reconstruct} = O(N^2)
+\end{equation}
+
+Nel caso pratico, la lunghezza media dei percorsi è molto inferiore 
+a $N$, quindi questa stima è pessimistica.
+
+\subsection{Complessità Totale}
+
+La complessità temporale totale dell'algoritmo è:
+
+\begin{equation}
+    T_{tot} = O(P \log P + N^2)
+\end{equation}
+
+Poiché $P \leq 10000$ e $N \leq 1000$, entrambi i termini sono 
+dominati da valori molto contenuti nella pratica.
+
+\section{Complessità Spaziale}
+
+Le strutture dati utilizzate occupano la seguente memoria:
+
+\begin{itemize}
+    \item \textbf{Lista di adiacenza} \texttt{adj}: $O(N + P)$ per 
+    memorizzare tutti i nodi e le tratte;
+    \item \textbf{Vettori ausiliari} \texttt{dist}, \texttt{totalCost}, 
+    \texttt{maxEdge}, \texttt{parent}: $O(N)$ ciascuno, per un totale 
+    di $O(N)$;
+    \item \textbf{Coda di priorità}: al più $O(P)$ elementi 
+    simultaneamente;
+    \item \textbf{Vettore \texttt{path}} in \texttt{reconstructPath}: 
+    $O(N)$ per il percorso più lungo possibile.
+\end{itemize}
+
+La complessità spaziale totale è:
+
+\begin{equation}
+    S = O(N + P)
+\end{equation}
+
+\section{Confronto con Dijkstra Classico}
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Algoritmo} & \textbf{Complessità Temporale} & \textbf{Complessità Spaziale} \\
+\hline
+Dijkstra classico      & $O(P \log P)$ & $O(N + P)$ \\
+Variante con sconto    & $O(P \log P)$ & $O(N + P)$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+La variante proposta ha la stessa complessità asintotica del Dijkstra 
+classico. L'unica differenza è che ogni stato nella coda contiene 
+tre campi invece di due (\texttt{totalCost}, \texttt{maxCost}, 
+\texttt{node}), con un overhead costante sia in tempo che in spazio.

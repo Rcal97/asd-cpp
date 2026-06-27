@@ -1,0 +1,95 @@
+\documentclass[12pt,italian,a4paper,oneside,openright]{book}
+\usepackage{url,amsfonts,epsfig}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{vmargin}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{float}
+\graphicspath{{img/}}
+\usepackage[hyperindex]{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black}
+\sloppy
+
+\setmarginsrb{35mm}{30mm}{30mm}{30mm}{0mm}{10mm}{0mm}{10mm}
+
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\DeclareGraphicsRule{.jpg}{jpg}{}{}
+
+% Stile per listati C++
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{orange},
+    numberstyle=\tiny\color{gray},
+    numbers=left,
+    stepnumber=1,
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+    tabsize=4
+}
+
+\title{Relazione ASD --- Traccia 1: Percorsi nell'Arcipelago}
+\author{Raffaele Calcagno}
+\date{A.A. 2021--2022}
+
+\begin{document}
+\pagenumbering{Roman}
+\baselineskip 1.5em
+
+%% FRONTESPIZIO
+{\thispagestyle{empty}
+\vskip 1cm \large \centerline{\textsc{Universit\'a degli Studi di
+Napoli ``Parthenope''}}
+\centerline{\textsc{Scuola interdipartimentale delle Scienze, dell'Ingegneria e della Salute}}
+\centerline{\textsc{Dipartimento di Scienze e Tecnologie}}
+\centerline{\small\textsc{Corso di laurea in Informatica}}
+\begin{center}
+\includegraphics[scale=0.24]{images/logo.png}
+\end{center}
+\vskip 0.5cm
+\large \centerline{\textsc{Relazione di Algoritmi e Strutture Dati}}
+\vskip 0.5cm
+\Large \centerline{Traccia 1 --- Esercizio 2}
+\Large \centerline{Percorsi nell'Arcipelago}
+\vskip 4.5cm
+\large
+\begin{minipage}[t]{7cm}
+\textsc{Docente}\\
+Prof. Ferone\\
+\end{minipage}
+\hfill
+\begin{minipage}[t]{5cm}
+\textsc{Studente}\\
+Raffaele Calcagno\\
+0124001717
+\end{minipage}
+\vskip 2.0cm \Large \centerline{Anno Accademico 2021--2022}
+\vfill \eject}
+
+\pagenumbering{arabic}
+\input{capitoli/cap1_problema.tex}
+\input{capitoli/cap2_strutture.tex}
+\input{capitoli/cap3_inputoutput.tex}
+\input{capitoli/cap4_algoritmo.tex}
+\input{capitoli/cap5_classdiagram.tex}
+\input{capitoli/cap6_complessita.tex}
+\input{capitoli/cap7_test.tex}
+
+\end{document}
